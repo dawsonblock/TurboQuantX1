@@ -26,7 +26,7 @@ import mlx.core as mx
 
 from turboquant import TurboQuantConfig
 from turboquant.runtime.attention import turboquant_streaming_attention
-from turboquant.runtime.kv_interface import KVCompressor
+from turboquant.runtime.kv_interface import TurboQuantKVCache as KVCompressor
 
 # ---------------------------------------------------------------------------
 # Dims

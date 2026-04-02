@@ -36,7 +36,7 @@ def __getattr__(name: str):
         return TurboQuantPipeline
     elif name == "KVCompressor":
         require_mlx("KVCompressor")
-        from turboquant.runtime.kv_interface import KVCompressor
+        from turboquant.runtime.kv_interface import TurboQuantKVCache as KVCompressor
         return KVCompressor
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 

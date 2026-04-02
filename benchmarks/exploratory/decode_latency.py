@@ -18,7 +18,7 @@ import mlx.core as mx
 
 from tests.integration.test_turboquant_gemma import PREFILL_LEN, _make_kv
 from turboquant import TurboQuantConfig
-from turboquant.runtime.kv_interface import KVCompressor
+from turboquant.runtime.kv_interface import TurboQuantKVCache as KVCompressor
 
 
 def my_make_tq_cache(rm):

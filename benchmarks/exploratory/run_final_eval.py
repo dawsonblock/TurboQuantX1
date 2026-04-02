@@ -6,7 +6,7 @@ import mlx.core as mx
 
 from turboquant.config import TurboQuantConfig
 from turboquant.runtime.attention import turboquant_streaming_attention
-from turboquant.runtime.kv_interface import KVCompressor
+from turboquant.runtime.kv_interface import TurboQuantKVCache as KVCompressor
 
 
 def measure_dense_attention(B, H_q, H_kv, L, D):

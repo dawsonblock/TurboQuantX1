@@ -24,7 +24,7 @@ import mlx.core as mx
 
 from mlx_lm.models.cache import KVCache
 from turboquant import TurboQuantConfig
-from turboquant.runtime.kv_interface import KVCompressor
+from turboquant.runtime.kv_interface import TurboQuantKVCache as KVCompressor
 
 # ---------------------------------------------------------------------------
 # Config matrix
