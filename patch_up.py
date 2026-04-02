@@ -4,7 +4,7 @@ with open('integrations/mlx/upgrade.py', 'r') as f:
     content = f.read()
 
 old_code = """        legacy_cfg = TurboQuantConfig(
-            main_bits=config.k_bits,  # type: ignore
+            k_bits=config.k_bits,  # type: ignore
             group_size=config.k_group_size,  # type: ignore
             rotation=config.rotation,  # type: ignore
             return_mode="view",  # type: ignore
@@ -19,7 +19,7 @@ old_code = """        legacy_cfg = TurboQuantConfig(
         )"""
 
 new_code = """        legacy_cfg = TurboQuantConfig(
-            main_bits=getattr(config, 'k_bits', 3),
+            k_bits=getattr(config, 'k_bits', 3),
             group_size=getattr(config, 'k_group_size', 32),
             rotation_mode=getattr(config, 'rotation_mode', getattr(config, 'rotation', 'hadamard')),
             rotation_pad_to_pow2=getattr(config, 'rotation_pad_to_pow2', True),

@@ -125,7 +125,7 @@ def _run_benchmark(
     from turboquant.metrics.tracker import MetricsTracker
 
     config = TurboQuantConfig.from_legacy_kwargs(
-        main_bits=k_bits,
+        k_bits=k_bits,
         group_size=k_group,
         v_bits=v_bits,
         v_group_size=v_group,

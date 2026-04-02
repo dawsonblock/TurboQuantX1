@@ -27,7 +27,7 @@ response = generate(
     max_tokens=200,
     verbose=True,
     turboquant_k_start=0,
-    turboquant_main_bits=3,
+    turboquant_k_bits=3,
     turboquant_group_size=64,
 )
 end_time = time.time()

@@ -45,7 +45,7 @@ def encode_k_block(
     d_head = int(k_rot.shape[-1])
     d_rot = d_head
 
-    k_quant_in, d_quant = pad_last_dim(k_rot, config.group_size)
+    k_quant_in, d_quant = pad_last_dim(k_rot, config.k_group_size)
 
     packed_main, scales = quantize_main(k_quant_in, config=config)
     main_hat = dequantize_main(packed_main, scales, config=config)

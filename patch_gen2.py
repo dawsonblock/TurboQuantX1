@@ -4,7 +4,7 @@ with open('mlx_lm/generate.py', 'r') as f:
     text = f.read()
 
 old_call = """    _cfg = _TQConfig(
-        k_bits=turboquant_main_bits,
+        k_bits=turboquant_k_bits,
         k_group_size=turboquant_group_size,
         rotation=turboquant_rotation,
         residual_topk=turboquant_residual_topk,
@@ -15,7 +15,7 @@ old_call = """    _cfg = _TQConfig(
     )"""
 
 new_call = """    _cfg = _TQConfig.from_legacy_kwargs(
-        main_bits=turboquant_main_bits,
+        k_bits=turboquant_k_bits,
         group_size=turboquant_group_size,
         rotation_mode=turboquant_rotation,
         residual_topk=turboquant_residual_topk,

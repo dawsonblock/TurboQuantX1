@@ -9,7 +9,7 @@ Prints a table like:
   === Dense vs TurboQuant: memory & encode latency ===
   config                  tokens  dense_MB  tq_MB  ratio  ms_dense  ms_tq
   ----------------------------------------------------------------...
-  main_bits=3 group=64      256     4.00     0.42   9.6x    0.12     0.18
+  k_bits=3 group=64      256     4.00     0.42   9.6x    0.12     0.18
   ...
 """
 

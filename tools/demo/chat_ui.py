@@ -93,7 +93,7 @@ def bot_action(history, max_tokens, temperature, k_bits, group_size):
         max_tokens=int(max_tokens),
         sampler=sampler,
         turboquant_k_start=0,
-        turboquant_main_bits=int(k_bits),
+        turboquant_k_bits=int(k_bits),
         turboquant_group_size=int(group_size),
     )
 

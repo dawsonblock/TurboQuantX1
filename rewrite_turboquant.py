@@ -18,7 +18,7 @@ ResidualMode = Literal["none", "topk", "qjl"]
 @dataclass(slots=True)
 class TurboQuantConfig:
     # First-stage quantizer
-    main_bits: int = 3
+    k_bits: int = 3
     group_size: int = 32
 
     # Rotation
@@ -42,8 +42,8 @@ class TurboQuantConfig:
     return_mode: str = "reconstruct"
 
     def validate(self) -> None:
-        if self.main_bits <= 0 or self.main_bits > 8:
-            raise ValueError(f"main_bits must be in [1, 8], got {self.main_bits}")
+        if self.k_bits <= 0 or self.k_bits > 8:
+            raise ValueError(f"k_bits must be in [1, 8], got {self.k_bits}")
 
         if self.group_size <= 0:
             raise ValueError(f"group_size must be > 0, got {self.group_size}")
@@ -75,7 +75,7 @@ class TurboQuantConfig:
         Thin migration shim for older callers.
         \"\"\"
         cfg = cls(
-            main_bits=kwargs.get("main_bits", 3),
+            k_bits=kwargs.get("k_bits", 3),
             group_size=kwargs.get("group_size", 32),
             return_mode=kwargs.get("return_mode", "reconstruct"),
             residual_topk=kwargs.get("residual_topk", kwargs.get("residual", 0)),
@@ -709,7 +709,7 @@ class TurboQuantKVCache:
         return KVCacheState(
             blocks=[b.to_dict() for b in self._blocks],
             config={
-                "main_bits": self.config.main_bits,
+                "k_bits": self.config.k_bits,
                 "group_size": self.config.group_size,
                 "rotation_mode": self.config.rotation_mode,
                 "rotation_pad_to_pow2": self.config.rotation_pad_to_pow2,
@@ -738,7 +738,7 @@ class TurboQuantKVCache:
             raw = state.to_dict()
 
         config = TurboQuantConfig(
-            main_bits=int(raw["config"]["main_bits"]),
+            k_bits=int(raw["config"]["k_bits"]),
             group_size=int(raw["config"]["group_size"]),
             rotation_mode=raw["config"]["rotation_mode"],
             rotation_pad_to_pow2=bool(raw["config"]["rotation_pad_to_pow2"]),
@@ -864,7 +864,7 @@ def fake_dequantize_main(packed, scales, *, config):
 
 def test_cache_stores_generic_blocks_qjl():
     cfg = TurboQuantConfig(
-        main_bits=3,
+        k_bits=3,
         group_size=32,
         residual_mode="qjl",
         qjl_proj_dim=64,
@@ -904,7 +904,7 @@ def fake_dequantize_main(packed, scales, *, config):
 
 def test_score_block_none_mode_shape():
     cfg = TurboQuantConfig(
-        main_bits=3,
+        k_bits=3,
         group_size=32,
         residual_mode="none",
         rotation_pad_to_pow2=True,
@@ -946,7 +946,7 @@ def fake_dequantize_main(packed, scales, *, config):
 
 def test_score_block_qjl_shape():
     cfg = TurboQuantConfig(
-        main_bits=3,
+        k_bits=3,
         group_size=32,
         residual_mode="qjl",
         qjl_proj_dim=64,

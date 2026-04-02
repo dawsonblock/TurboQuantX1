@@ -377,7 +377,7 @@ class KVCache(_BaseCache):
     def to_turboquant(
         self,
         *,
-        main_bits: int = 3,
+        k_bits: int = 3,
         group_size: int = 64,
         rotation: str = "identity",
         return_mode: str = "view",
@@ -392,7 +392,7 @@ class KVCache(_BaseCache):
     ) -> "TurboQuantKCache":
         tq = TurboQuantKCache(
             TurboQuantConfig(
-                main_bits=main_bits,
+                k_bits=k_bits,
                 group_size=group_size,
                 rotation=rotation,
                 return_mode=return_mode,
@@ -412,8 +412,8 @@ class KVCache(_BaseCache):
             tq.update_and_fetch(keys, values)
         logger.debug(
             "to_turboquant: upgraded layer with offset=%d  "
-            "(main_bits=%d, rotation=%s)",
-            self.offset, main_bits, rotation,
+            "(k_bits=%d, rotation=%s)",
+            self.offset, k_bits, rotation,
         )
         return tq
 

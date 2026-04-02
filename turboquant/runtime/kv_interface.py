@@ -92,8 +92,8 @@ class TurboQuantKVCache:
         return KVCacheState(
             blocks=[b.to_dict() for b in self._blocks],
             config={
-                "main_bits": self.config.main_bits,
-                "group_size": self.config.group_size,
+                "k_bits": self.config.k_bits,
+                "group_size": self.config.k_group_size,
                 "rotation_mode": self.config.rotation_mode,
                 "rotation_pad_to_pow2": self.config.rotation_pad_to_pow2,
                 "residual_mode": self.config.residual_mode,
@@ -121,7 +121,7 @@ class TurboQuantKVCache:
             raw = state.to_dict()
 
         config = TurboQuantConfig(
-            main_bits=int(raw["config"]["main_bits"]),
+            k_bits=int(raw["config"]["k_bits"]),
             group_size=int(raw["config"]["group_size"]),
             rotation_mode=raw["config"]["rotation_mode"],
             rotation_pad_to_pow2=bool(raw["config"]["rotation_pad_to_pow2"]),

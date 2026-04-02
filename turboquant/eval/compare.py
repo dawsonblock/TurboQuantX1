@@ -273,7 +273,7 @@ class AccuracyComparison:
 
         # Build a per-layer legacy config from the production config
         legacy_cfg = TurboQuantConfig(
-            main_bits=getattr(self._config, "k_bits", 3),
+            k_bits=getattr(self._config, "k_bits", 3),
             group_size=getattr(self._config, "k_group_size", 64)
         )
         cache = [

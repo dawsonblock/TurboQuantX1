@@ -18,7 +18,7 @@ Typical usage
     report = drift_report(
         model=my_model,
         input_ids=ids,          # [1, T]
-        turboquant_config=TurboQuantConfig(main_bits=3, group_size=64),
+        turboquant_config=TurboQuantConfig(k_bits=3, group_size=64),
     )
     print(report)
     # {'mean_kl': 0.004, 'max_kl': 0.021, 'n_tokens': 63}

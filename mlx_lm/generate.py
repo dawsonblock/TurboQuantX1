@@ -301,7 +301,7 @@ _tq_upgrade_logged = False  # module-level flag for one-shot confirmation
 def maybe_turboquant_k_cache(
     prompt_cache,
     turboquant_k_start,
-    turboquant_main_bits,
+    turboquant_k_bits,
     turboquant_group_size,
     turboquant_rotation,
     turboquant_resid_scale_bits,
@@ -349,7 +349,7 @@ def maybe_turboquant_k_cache(
             stacklevel=2,
         )
     _cfg = _TQConfig.from_legacy_kwargs(
-        main_bits=turboquant_main_bits,
+        k_bits=turboquant_k_bits,
         group_size=turboquant_group_size,
         rotation_mode=turboquant_rotation,
         residual_topk=turboquant_residual_topk,
@@ -372,7 +372,7 @@ def maybe_turboquant_k_cache(
                 "TurboQuant cache active: %d/%d layers upgraded "
                 "(k_bits=%d, rotation=%s, v_enabled=%s)",
                 n_upgraded, len(prompt_cache),
-                turboquant_main_bits, turboquant_rotation,
+                turboquant_k_bits, turboquant_rotation,
                 turboquant_v_enabled,
             )
             _tq_upgrade_logged = True
@@ -395,7 +395,7 @@ def generate_step(
     input_embeddings: Optional[mx.array] = None,
     # TurboQuant cache upgrade parameters
     turboquant_k_start: Optional[int] = None,
-    turboquant_main_bits: int = 3,
+    turboquant_k_bits: int = 3,
     turboquant_group_size: int = 64,
     turboquant_rotation: str = "identity",
     turboquant_resid_scale_bits: int = 8,
@@ -471,7 +471,7 @@ def generate_step(
     turboquant_cache_fn = functools.partial(
         maybe_turboquant_k_cache,
         turboquant_k_start=turboquant_k_start,
-        turboquant_main_bits=turboquant_main_bits,
+        turboquant_k_bits=turboquant_k_bits,
         turboquant_group_size=turboquant_group_size,
         turboquant_rotation=turboquant_rotation,
         turboquant_resid_scale_bits=turboquant_resid_scale_bits,

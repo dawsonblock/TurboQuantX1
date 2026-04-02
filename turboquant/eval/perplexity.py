@@ -15,7 +15,7 @@ Typical usage
         model=my_model,
         tokenizer=my_tokenizer,
         prompt="The quick brown fox",
-        turboquant_config=TurboQuantConfig(main_bits=3, group_size=64),
+        turboquant_config=TurboQuantConfig(k_bits=3, group_size=64),
     )
     print(report)
     # {'dense_ppl': 12.3, 'tq_ppl': 12.6, 'delta_ppl': 0.3, 'n_tokens': 8}

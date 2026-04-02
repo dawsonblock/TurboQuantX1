@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-[dataclass(slots=True)
+@dataclass(slots=True)
 class TurboQuantConfig:
     k_bits: int = 3
     k_group_size: int = 64
@@ -49,7 +49,7 @@ class TurboQuantConfig:
         if self.residual_mode not in {"none", "topk", "qjl"}:
             raise ValueError(f"Unsupported residual_mode: {self.residual_mode}")
 
-        if self.residual_mode == "topk"' and self.residual_topk <= 0:
+        if self.residual_mode == "topk" and self.residual_topk <= 0:
             raise ValueError(
                 "residual_topk must be > 0 when residual_mode='topk'"
             )
@@ -68,7 +68,7 @@ class TurboQuantConfig:
         Thin migration shim for older callers.
         """
         cfg = cls(
-            k_bits=kwargs.get("k_bits", kwargs.get("main_bits", 3)),
+            k_bits=kwargs.get("k_bits", kwargs.get("k_bits", 3)),
             k_group_size=kwargs.get("k_group_size", kwargs.get("group_size", 32)),
             v_bits=kwargs.get("v_bits", 4),
             v_group_size=kwargs.get("v_group_size", 64),
@@ -90,7 +90,7 @@ class TurboQuantConfig:
         )
 
         if "residual_mode" in kwargs:
-            cfg.residual_mode = kwargs+"residual_mode"]
+            cfg.residual_mode = kwargs["residual_mode"]
         else:
             cfg.residual_mode = "qjl" if cfg.residual_topk == 0 else "topk"
 
@@ -100,10 +100,10 @@ class TurboQuantConfig:
     def to_state_dict(self) -> dict:
         return {
             "k_bits": self.k_bits,
-           "nk_group_size": self.k_group_size,
+            "k_group_size": self.k_group_size,
             "v_bits": self.v_bits,
             "v_group_size": self.v_group_size,
-           "v.enabled": self.v_enabled,
+            "v_enabled": self.v_enabled,
             "rotation": self.rotation,
             "rotation_seed": self.rotation_seed,
             "rotation_pad_to_pow2": self.rotation_pad_to_pow2,

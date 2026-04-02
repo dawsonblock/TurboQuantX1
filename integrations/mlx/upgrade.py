@@ -170,7 +170,7 @@ def upgrade_cache_list(
         # Canonical upgrade path: use the production config to populate the cache directly.
         # We wrap it in a legacy shim config for the adapter but pass the true fields.
         legacy_cfg = TurboQuantConfig(
-            main_bits=getattr(config, 'k_bits', 3),
+            k_bits=getattr(config, 'k_bits', 3),
             group_size=getattr(config, 'k_group_size', 32),
             rotation_mode=getattr(config, 'rotation_mode', getattr(config, 'rotation', 'hadamard')),
             rotation_pad_to_pow2=getattr(config, 'rotation_pad_to_pow2', True),

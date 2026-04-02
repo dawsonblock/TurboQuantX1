@@ -10,7 +10,7 @@ from turboquant.runtime.kv_interface import TurboQuantKVCache
 
 @dataclass
 class TurboQuantConfig:
-    main_bits: int = 3
+    k_bits: int = 3
     group_size: int = 32
     rotation_mode: str = "hadamard"
     rotation_pad_to_pow2: bool = True
@@ -30,7 +30,7 @@ class TurboQuantConfig:
 
 def _to_prod_config(cfg: TurboQuantConfig) -> _ProdTurboQuantConfig:
     return _ProdTurboQuantConfig.from_legacy_kwargs(
-        main_bits=cfg.main_bits,
+        k_bits=cfg.k_bits,
         group_size=cfg.group_size,
         rotation_mode=cfg.rotation_mode,
         rotation_pad_to_pow2=cfg.rotation_pad_to_pow2,
@@ -104,7 +104,7 @@ class TurboQuantKCache(_BaseCache):
     def meta_state(self):
         return (
             str(self._offset),
-            str(self.config.main_bits),
+            str(self.config.k_bits),
             str(self.config.group_size),
             str(self.config.rotation_mode),
             str(self.config.residual_topk),
@@ -145,7 +145,7 @@ class TurboQuantKCache(_BaseCache):
                 qb,
             ) = v[:17]
             self.config = TurboQuantConfig(
-                main_bits=int(mb),
+                k_bits=int(mb),
                 group_size=int(gs),
                 rotation_mode=rot,
                 residual_topk=int(rt),
@@ -179,7 +179,7 @@ class TurboQuantKCache(_BaseCache):
                 ve,
             ) = v
             self.config = TurboQuantConfig(
-                main_bits=int(mb),
+                k_bits=int(mb),
                 group_size=int(gs),
                 rotation_mode=rot,
                 residual_topk=int(rt),

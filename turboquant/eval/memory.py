@@ -17,7 +17,7 @@ Typical usage
     report = memory_report(
         model=my_model,
         input_ids=ids,
-        turboquant_config=TurboQuantConfig(main_bits=3, group_size=64),
+        turboquant_config=TurboQuantConfig(k_bits=3, group_size=64),
     )
     print(report)
     # {'dense_cache_bytes': 2097152, 'tq_cache_bytes': 524288,

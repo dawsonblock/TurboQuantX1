@@ -119,7 +119,7 @@ def run_single_generation(
     tq_active = mode == "turboquant"
     if tq_active:
         gen_kwargs["turboquant_k_start"] = 0
-        gen_kwargs["turboquant_main_bits"] = 3
+        gen_kwargs["turboquant_k_bits"] = 3
         gen_kwargs["turboquant_group_size"] = 64
         gen_kwargs["turboquant_rotation"] = "hadamard"
         gen_kwargs["turboquant_residual_topk"] = 2

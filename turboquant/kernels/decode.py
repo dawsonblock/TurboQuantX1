@@ -21,7 +21,7 @@ def decode_k_block_metal(block: EncodedKeyBlock, config, d_head: int) -> mx.arra
     # Fallback to python
     def dummy_dequantize_main(packed_main, scales, *, config):
         from turboquant.core.quantizer import dequantize_groups
-        d_pad = (d_head + config.group_size - 1) // config.group_size * config.group_size
-        return dequantize_groups(packed_main, scales, config.main_bits, config.group_size, d_pad)
+        d_pad = (d_head + config.k_group_size - 1) // config.k_group_size * config.k_group_size
+        return dequantize_groups(packed_main, scales, config.k_bits, config.k_group_size, d_pad)
 
     return decode_k_block(block, config=config, dequantize_main=dummy_dequantize_main)

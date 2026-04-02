@@ -92,7 +92,7 @@ class TopKResidualCodec:
         vals, idx = encode_topk_residual(
             residual,
             k=config.residual_topk,
-            group_size=config.group_size,
+            group_size=config.k_group_size,
         )
         return ResidualPayload(
             mode="topk",
@@ -112,7 +112,7 @@ class TopKResidualCodec:
         return decode_topk_residual(
             payload.data["vals"],
             payload.data["idx"],
-            group_size=config.group_size,
+            group_size=config.k_group_size,
         )
 
     def dot_estimate(
