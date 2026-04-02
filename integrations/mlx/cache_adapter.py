@@ -11,7 +11,7 @@ from turboquant.runtime.kv_interface import TurboQuantKVCache
 @dataclass
 class TurboQuantConfig:
     k_bits: int = 3
-    group_size: int = 32
+    k_group_size: int = 32
     rotation_mode: str = "hadamard"
     rotation_pad_to_pow2: bool = True
     residual_mode: str = "qjl"
@@ -31,7 +31,7 @@ class TurboQuantConfig:
 def _to_prod_config(cfg: TurboQuantConfig) -> _ProdTurboQuantConfig:
     return _ProdTurboQuantConfig.from_legacy_kwargs(
         k_bits=cfg.k_bits,
-        group_size=cfg.group_size,
+        k_group_size=cfg.k_group_size,
         rotation_mode=cfg.rotation_mode,
         rotation_pad_to_pow2=cfg.rotation_pad_to_pow2,
         residual_mode=cfg.residual_mode,
@@ -43,7 +43,7 @@ def _to_prod_config(cfg: TurboQuantConfig) -> _ProdTurboQuantConfig:
     )
 
 def dummy_quantize_main(x, *, config):
-    return x, mx.ones((*x.shape[:-1], x.shape[-1] // config.group_size), dtype=mx.float32)
+    return x, mx.ones((*x.shape[:-1], x.shape[-1] // config.k_group_size), dtype=mx.float32)
 
 def dummy_dequantize_main(packed, scales, *, config):
     return packed
@@ -105,7 +105,7 @@ class TurboQuantKCache(_BaseCache):
         return (
             str(self._offset),
             str(self.config.k_bits),
-            str(self.config.group_size),
+            str(self.config.k_group_size),
             str(self.config.rotation_mode),
             str(self.config.residual_topk),
             str(self.config.resid_scale_bits),
@@ -146,7 +146,7 @@ class TurboQuantKCache(_BaseCache):
             ) = v[:17]
             self.config = TurboQuantConfig(
                 k_bits=int(mb),
-                group_size=int(gs),
+                k_group_size=int(gs),
                 rotation_mode=rot,
                 residual_topk=int(rt),
                 resid_scale_bits=int(rs),
@@ -180,7 +180,7 @@ class TurboQuantKCache(_BaseCache):
             ) = v
             self.config = TurboQuantConfig(
                 k_bits=int(mb),
-                group_size=int(gs),
+                k_group_size=int(gs),
                 rotation_mode=rot,
                 residual_topk=int(rt),
                 resid_scale_bits=int(rs),

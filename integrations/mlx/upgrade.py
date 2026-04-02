@@ -171,7 +171,7 @@ def upgrade_cache_list(
         # We wrap it in a legacy shim config for the adapter but pass the true fields.
         legacy_cfg = TurboQuantConfig(
             k_bits=getattr(config, 'k_bits', 3),
-            group_size=getattr(config, 'k_group_size', 32),
+            k_group_size=getattr(config, 'k_group_size', 32),
             rotation_mode=getattr(config, 'rotation_mode', getattr(config, 'rotation', 'hadamard')),
             rotation_pad_to_pow2=getattr(config, 'rotation_pad_to_pow2', True),
             residual_mode=getattr(config, 'residual_mode', 'qjl' if getattr(config, 'residual_topk', 0) == 0 else 'topk'),
