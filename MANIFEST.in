@@ -12,3 +12,7 @@ exclude test_*.py
 exclude inspect_mx.py
 exclude Session
 exclude *.code-workspace
+
+prune __MACOSX
+prune __pycache__
+exclude result.txt

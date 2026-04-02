@@ -62,3 +62,10 @@ test_tq_run.py
 inspect_mx.py
 *.bak
 turboquant.egg-info/
+
+# Packaging junk
+__MACOSX/
+__pycache__/
+*.pyc
+result.txt
+artifacts/

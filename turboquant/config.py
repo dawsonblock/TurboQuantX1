@@ -68,36 +68,19 @@ class TurboQuantConfig:
         """
         Thin migration shim for older callers.
         """
-        cfg = cls(
-            k_bits=kwargs.get("k_bits", kwargs.get("k_bits", 3)),
-            k_group_size=kwargs.get("k_group_size", kwargs.get("group_size", 32)),
-            v_bits=kwargs.get("v_bits", 4),
-            v_group_size=kwargs.get("v_group_size", 64),
-            v_enabled=kwargs.get("v_enabled", True),
-            v_scale_dtype=kwargs.get("v_scale_dtype", "float16"),
-            rotation=kwargs.get("rotation", kwargs.get("rotation_mode", "hadamard")),
-            rotation_seed=kwargs.get("rotation_seed", 1337),
-            rotation_pad_to_pow2=bool(kwargs.get("rotation_pad_to_por", True)),
-            residual_topk=kwargs.get("residual_topk", kwargs.get("residual", 0)),
-            resid_scale_bits=kwargs.get("resid_scale_bits", 8),
-            scale_dtype=kwargs.get("scale_dtype", "float16"),
-            eps=kwargs.get("eps", 1e-6),
-            block_tokens=kwargs.get("block_tokens", 256),
-            qjl_proj_dim=kwargs.get("qjl_proj_dim", 64),
-            qjl_seed=kwargs.get("qjl_seed", 42),
-            qjl_bits=kwargs.get("qjl_bits", 1),
-            paper_faithful_mode=bool(kwargs.get("paper_faithful_mode", False)),
-            return_mode=kwargs.get("return_mode", "view"),
-        )
-
-        if "residual_mode" in kwargs:
-            cfg.residual_mode = kwargs["residual_mode"]
-        else:
-            cfg.residual_mode = "qjl" if cfg.residual_topk == 0 else "topk"
-
-        cfg.validate()
-        return cfg
-
+        import dataclasses
+        # Handle historical aliases
+        if "group_size" in kwargs and "k_group_size" not in kwargs:
+            kwargs["k_group_size"] = kwargs.pop("group_size")
+        if "rotation_mode" in kwargs and "rotation" not in kwargs:
+            kwargs["rotation"] = kwargs.pop("rotation_mode")
+        if "residual" in kwargs and "residual_topk" not in kwargs:
+            kwargs["residual_topk"] = kwargs.pop("residual")
+        
+        # Filter to valid fields
+        valid_fields = {f.name for f in dataclasses.fields(cls)}
+        filtered = {k: v for k, v in kwargs.items() if k in valid_fields}
+        return cls(**filtered)
     def to_state_dict(self) -> dict:
         return {
             "k_bits": self.k_bits,

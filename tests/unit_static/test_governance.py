@@ -13,7 +13,7 @@ Contract coverage
    undermine the static-test contract.
 
 2. ``noxfile_excludes_unit_from_mlx_session`` — the noxfile's ``tests_mlx``
-   session must NOT include ``tests/unit/`` now that all MLX-requiring tests
+   session must NOT include ``tests/unit_mlx_mlx/`` now that all MLX-requiring tests
    have been moved to ``tests/integration_mlx/``.
 
 3. ``support_module_has_expected_families`` — ``SUPPORTED_FAMILIES`` in
@@ -68,12 +68,12 @@ def test_no_mlx_import_in_unit_static() -> None:
 
 
 # ---------------------------------------------------------------------------
-# 2. noxfile excludes tests/unit/ from tests_mlx
+# 2. noxfile excludes tests/unit_mlx_mlx/ from tests_mlx
 # ---------------------------------------------------------------------------
 
 
 def test_noxfile_excludes_unit_from_mlx_session() -> None:
-    """tests/unit/ must NOT appear inside the tests_mlx nox session."""
+    """tests/unit_mlx_mlx/ must NOT appear inside the tests_mlx nox session."""
     noxfile = REPO_ROOT / "noxfile.py"
     assert noxfile.exists(), "noxfile.py not found at repo root"
 
@@ -94,8 +94,8 @@ def test_noxfile_excludes_unit_from_mlx_session() -> None:
     assert mlx_session_src is not None, (
         "Could not find 'tests_mlx' function in noxfile.py"
     )
-    assert "tests/unit/" not in mlx_session_src, (
-        "noxfile.py tests_mlx session still references 'tests/unit/'.\n"
+    assert "tests/unit_mlx_mlx/" not in mlx_session_src, (
+        "noxfile.py tests_mlx session still references 'tests/unit_mlx_mlx/'.\n"
         "All MLX-requiring tests must live in tests/integration_mlx/."
     )
 

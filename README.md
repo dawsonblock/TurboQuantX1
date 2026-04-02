@@ -128,7 +128,7 @@ response = generate(
 
 ```python
 from mlx_lm.models.cache import make_prompt_cache
-from integrations.mlx.upgrade import upgrade_cache_list
+from turboquant.integrations.mlx.upgrade import upgrade_cache_list
 from turboquant.config import TurboQuantConfig
 
 cache = make_prompt_cache(model)
@@ -169,8 +169,14 @@ config = TurboQuantConfig(
 
 ### Legacy mlx-lm cache adapter
 
-`turboquant_resid_scale_bits` remains only for backward-compatible state loading. The production upgrade path always returns a `TurboQuantKeysView`; real residual behavior is controlled by `residual_mode` + `residual_topk`.
+> **⚠️ Compatibility Only:** This adapter is maintained for backward compatibility. New integrations should use `from turboquant.integrations.mlx.upgrade import upgrade_cache_list`.
 
+```python
+from turboquant.integrations.mlx.cache_adapter import TurboQuantKCache, TurboQuantConfig as AdapterConfig
+cache = TurboQuantKCache(
+    AdapterConfig(k_bits=3, k_group_size=64, rotation_mode="hadamard",
+                  v_bits=4, v_enabled=True)
+)
 ```python
 from integrations.mlx.cache_adapter import TurboQuantKCache, TurboQuantConfig as AdapterConfig
 
@@ -387,7 +393,7 @@ docs/
 | Centralized SDPA dispatch in `mlx_lm/models/base.py` | ✅ all model families |
 | Gemma streaming attention | ✅ wired |
 | Llama streaming attention | ✅ wired |
-| Qwen streaming attention | ✅ runtime verified |
+| Qwen streaming attention | ⬜ needs per-arch patch |
 | `upgrade_cache_list` cache upgrade API | ✅ canonical, idempotent |
 | Eval suite (perplexity / KL drift / memory) | ✅ `turboquant.eval` |
 | Quality gates (Δppl ≤ 0.5, mean_kl ≤ 0.1) | ✅ `run_quality_eval.py` |
@@ -400,7 +406,7 @@ docs/
 | Benchmarks (memory / latency / streaming) | ✅ `benchmarks/` |
 | Architecture + integration docs | ✅ `docs/` |
 | Other architectures (Mistral, Phi, …) | ⬜ needs per-arch patch |
-| Fused Metal kernel (decode & dequant) | ✅ available via `TQ_USE_METAL=1` |
+| Fused Metal kernel (decode & dequant) | ✅ available via `TQ_USE_METAL (Experimental)=1` |
 | Native JIT compilation fallback | ✅ ~2x speedup `mx.compile(inner)` |
 | Perplexity / quality benchmarks at scale | ⬜ not yet measured |
 
@@ -410,7 +416,7 @@ docs/
 
 - **Quality gated but not yet measured at scale** — `run_quality_eval.py` enforces Δppl ≤ 0.5 and mean_kl ≤ 0.1 gates. Run `make certify-apple-runtime` with model weights to validate.
 - **Gemma-, Llama-, and Qwen-family paths are runtime verified** on Apple Silicon via the benchmark suite. Other model families route through the centralized `base.py` SDPA dispatch automatically — no per-model wiring required. Adding a new architecture is a [one-function change](docs/integration.md#adding-a-new-model-family).
-- **Metal execution requires explicit opt-in** — Apple Silicon native shaders are extremely fast (~1ms execution latency per 1024 token stream) but require opt-in by setting `TQ_USE_METAL=1`. Core native bindings have been aggressively optimized via `mx.compile` for default fallback paths yielding double the fallback speed.
+- **Metal execution requires explicit opt-in** — Apple Silicon native shaders are extremely fast (~1ms execution latency per 1024 token stream) but require opt-in by setting `TQ_USE_METAL (Experimental)=1`. Core native bindings have been aggressively optimized via `mx.compile` for default fallback paths yielding double the fallback speed.
 - **Hadamard is O(d²)** — not a fast butterfly transform. For very large head-dims, `rotation="identity"` is faster with marginally worse compression.
 
 ---

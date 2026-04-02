@@ -9,7 +9,7 @@ Public API
 +--------
 TurboQuantConfig          — runtime-immutable configuration
 TurboQuantPipeline        — low-level encode/decode pipeline
-KVCompressor              — compatibility alias to TurboQuantKVCache
+KVCompressor  # Compatibility alias              — compatibility alias to TurboQuantKVCache
 calibrate                 — calibration pass over representative data
 """
 
@@ -30,20 +30,20 @@ def __getattr__(name: str):
         require_mlx("calibrate()")
         from turboquant.calibration.fit_quantizer import calibrate
         return calibrate
-    elif name == "TurboquantPipeline":
+    elif name == "TurboQuantPipeline":
         require_mlx("TurboQuantPipeline")
         from turboquant.core.pipeline import TurboQuantPipeline
         return TurboQuantPipeline
-    elif name == "KVCompressor":
-        require_mlx("KVCompressor")
-        from turboquant.runtime.kv_interface import TurboQuantKVCache as KVCompressor
-        return KVCompressor
+    elif name == "KVCompressor  # Compatibility alias":
+        require_mlx("KVCompressor  # Compatibility alias")
+        from turboquant.runtime.kv_interface import TurboQuantKVCache as KVCompressor  # Compatibility alias
+        return KVCompressor  # Compatibility alias
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 __all__ = [
     "TurboQuantConfig",
     "TurboQuantPipeline",
-    "KVCompressor",
+    "KVCompressor  # Compatibility alias",
     "calibrate",
     "check_mlx_version",
     "has_mlx",

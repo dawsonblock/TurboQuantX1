@@ -43,7 +43,7 @@ make certify-apple-runtime
 
 ## Legacy integration tests
 
-`tests/integration/` is transitional coverage only if retained. It is not part of the canonical release-certification path. The release surface is `tests/unit/` plus `tests/integration_mlx/`.
+`tests/integration/` is transitional coverage only if retained. It is not part of the canonical release-certification path. The release surface is `tests/unit_mlx/` plus `tests/integration_mlx/`.
 
 ## Manual smoke testing
 

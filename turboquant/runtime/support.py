@@ -1,8 +1,9 @@
 """
 turboquant.runtime.support — central model-family support gate.
 
-This module is the single source of truth for which model families have
-TurboQuant attention wiring and runtime-certification coverage.
+This module is the EXPLICIT AND ONLY source of truth for which model families have
+TurboQuant attention wiring and runtime-certification coverage. All documentation,
+release notes, and test assertions MUST match this file exactly.
 
 Callers
 -------
