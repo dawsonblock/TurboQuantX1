@@ -1,6 +1,6 @@
 <div align="center">
 
-# ⚡ TurboQuant
+# ⚡ TurboQuantX1
 
 **Research-grade KV-cache compression for Apple Silicon MLX LLMs**
 
@@ -16,10 +16,10 @@
 
 ## What
 
-TurboQuant compresses the KV cache of transformer models running on Apple Silicon via [mlx-lm](https://github.com/ml-explore/mlx-lm). It targets memory reduction first. End-to-end latency depends on model, shape, and decode length, and is not publicly certified by generic CI.
+TurboQuantX1 compresses the KV cache of transformer models running on Apple Silicon via [mlx-lm](https://github.com/ml-explore/mlx-lm). It targets memory reduction first. End-to-end latency depends on model, shape, and decode length, and is not publicly certified by generic CI.
 
 > **⚠️ Current status:** Serious prototype.
-> TurboQuant is a research-grade KV-cache compression package for Apple-Silicon MLX inference. The supported runtime path is local Apple-Silicon validation for selected Llama-family and Gemma-family models. Custom Metal kernels are experimental and not part of the default supported runtime.
+> TurboQuantX1 is a research-grade KV-cache compression package for Apple-Silicon MLX inference. The supported runtime path is local Apple-Silicon validation for selected Llama-family and Gemma-family models. Custom Metal kernels are experimental and not part of the default supported runtime.
 > Supported surface is documented in [docs/supported-surface.md](docs/supported-surface.md). Release gating is documented in [docs/release-checklist.md](docs/release-checklist.md).
 
 ### 🚀 **Illustrative local memory examples**
@@ -34,9 +34,9 @@ published performance guarantees.
 | Type | Precision | Tokens | Total MB | Bytes / Token | Ratio vs Dense |
 |:---|:---:|:---:|:---:|:---:|:---:|
 | **Dense** | `float16` | 1024 | 2.10 MB | 2048 | 1.0x |
-| **TurboQuant** (k=4b, g=64) | 4-bit | 1024 | 0.61 MB | 592 | **3.5x smaller** |
-| **TurboQuant** (k=3b, g=64) | 3-bit | 1024 | 0.57 MB | 560 | **3.7x smaller** |
-| **TurboQuant** (k=2b, g=64) | 2-bit | 1024 | 0.48 MB | 464 | **4.4x smaller** |
+| **TurboQuantX1** (k=4b, g=64) | 4-bit | 1024 | 0.61 MB | 592 | **3.5x smaller** |
+| **TurboQuantX1** (k=3b, g=64) | 3-bit | 1024 | 0.57 MB | 560 | **3.7x smaller** |
+| **TurboQuantX1** (k=2b, g=64) | 2-bit | 1024 | 0.48 MB | 464 | **4.4x smaller** |
 
 Artifact-backed release measurements belong under `artifacts/runtime-cert/<timestamp>/` and should
 be treated as authoritative over any README example.
@@ -89,8 +89,8 @@ Decode K (streaming attention)
 ## Install
 
 ```bash
-git clone https://github.com/dawsonblock/TurboQuant
-cd TurboQuant
+git clone https://github.com/dawsonblock/TurboQuantX1
+cd TurboQuantX1
 python -m pip install -e '.[apple]'
 ```
 
@@ -103,10 +103,10 @@ python -m pip install -e '.[apple]'
 ### Core interface
 
 ```python
-from turboquant import KVCompressor, TurboQuantConfig
+from turboquant import KVCompressor, TurboQuantX1Config
 
 # Defaults: 3-bit K, 4-bit V, Hadamard-family rotation, k=2 sparse residual
-config = TurboQuantConfig()
+config = TurboQuantX1Config()
 cache  = KVCompressor(config, layer_id=0)
 
 # Each decode step:
@@ -123,14 +123,14 @@ for start, end, k_blk, v_blk in cache.iter_rotated_kv_blocks(view):
 ```python
 from mlx_lm.models.cache import make_prompt_cache
 from integrations.mlx.upgrade import upgrade_cache_list
-from turboquant.config import TurboQuantConfig
+from turboquant.config import TurboQuantX1Config
 
 cache = make_prompt_cache(model)
 # ... run prefill ...
 
-cfg    = TurboQuantConfig(k_bits=3, k_group_size=64, rotation="hadamard")
+cfg    = TurboQuantX1Config(k_bits=3, k_group_size=64, rotation="hadamard")
 events = upgrade_cache_list(cache, k_start=64, config=cfg)
-# decode loop continues with TurboQuant cache
+# decode loop continues with TurboQuantX1 cache
 ```
 
 ### Optional: offline calibration
@@ -151,7 +151,7 @@ calibrate(
 ### Tune the config
 
 ```python
-config = TurboQuantConfig(
+config = TurboQuantX1Config(
     k_bits=4,                          # increase for higher K quality
     residual_topk=4,                   # more residual components → lower error
     rotation="random_orthogonal",      # alternative to Hadamard
@@ -162,13 +162,13 @@ config = TurboQuantConfig(
 
 ### Legacy mlx-lm cache
 
-`turboquant_return_mode` and `turboquant_resid_scale_bits` remain only for backward-compatible state and config loading. The production upgrade path ignores `return_mode` and always returns a `TurboQuantKeysView`. Real residual behavior is controlled by `residual_topk`.
+`turboquant_return_mode` and `turboquant_resid_scale_bits` remain only for backward-compatible state and config loading. The production upgrade path ignores `return_mode` and always returns a `TurboQuantX1KeysView`. Real residual behavior is controlled by `residual_topk`.
 
 ```python
-from mlx_lm.models.cache import TurboQuantConfig, TurboQuantKCache
+from mlx_lm.models.cache import TurboQuantX1Config, TurboQuantX1KCache
 
-cache = TurboQuantKCache(
-    TurboQuantConfig(main_bits=3, group_size=64, rotation="hadamard",
+cache = TurboQuantX1KCache(
+    TurboQuantX1Config(main_bits=3, group_size=64, rotation="hadamard",
                      return_mode="view", v_bits=4, v_enabled=True)
 )
 ```
@@ -228,7 +228,7 @@ See [docs/validation-local.md](docs/validation-local.md) for details.
 # Memory footprint table (bit-width × sequence length)
 python benchmarks/bench_memory_footprint.py
 
-# Encode latency: dense vs TurboQuant
+# Encode latency: dense vs TurboQuantX1
 python benchmarks/bench_dense_vs_turboquant.py
 
 # Streaming attention throughput
@@ -244,17 +244,17 @@ Sample output from `bench_memory_footprint.py`:
 type                      bits  group  tokens   total_MB   bytes/tok   vs_dense
 -------------------------------------------------------------------------------
 dense (float16)             16     --    1024       2.10        2048       1.0x
-TurboQuant k=4b g=64         4     64    1024       0.61         592       3.5x
-TurboQuant k=3b g=64         3     64    1024       0.57         560       3.7x
-TurboQuant k=2b g=64         2     64    1024       0.48         464       4.4x
-TurboQuant k=4b g=32         4     32    1024       0.67         656       3.1x
-TurboQuant k=3b g=32         3     32    1024       0.64         624       3.3x
+TurboQuantX1 k=4b g=64         4     64    1024       0.61         592       3.5x
+TurboQuantX1 k=3b g=64         3     64    1024       0.57         560       3.7x
+TurboQuantX1 k=2b g=64         2     64    1024       0.48         464       4.4x
+TurboQuantX1 k=4b g=32         4     32    1024       0.67         656       3.1x
+TurboQuantX1 k=3b g=32         3     32    1024       0.64         624       3.3x
 ```
 
 Sample output from `bench_dense_vs_turboquant.py`:
 
 ```text
-=== Dense vs TurboQuant: memory & encode latency ===
+=== Dense vs TurboQuantX1: memory & encode latency ===
 
 config                          tokens  dense_MB    tq_MB   ratio   ms_dense    ms_tq
 -------------------------------------------------------------------------------------
@@ -269,10 +269,10 @@ k_bits=3  k_group_size=32         1024      2.10     0.64     3.3x      0.400   
 ## Evaluation
 
 ```python
-from mlx_lm.models.cache import TurboQuantConfig
+from mlx_lm.models.cache import TurboQuantX1Config
 from turboquant.eval import perplexity_report, drift_report, memory_report
 
-cfg = TurboQuantConfig(main_bits=3, group_size=64)
+cfg = TurboQuantX1Config(main_bits=3, group_size=64)
 
 # Perplexity delta vs dense
 ppl = perplexity_report(model, input_ids, turboquant_config=cfg)
@@ -314,15 +314,15 @@ See [docs/evaluation.md](docs/evaluation.md) for interpretation guidance.
 turboquant/
 ├── __init__.py                Lazy-import entry point (MLX-free on import)
 ├── _deps.py                   has_mlx() / is_apple_silicon() / require_mlx()
-├── config.py                  TurboQuantConfig — production schema
+├── config.py                  TurboQuantX1Config — production schema
 ├── core/
 │   ├── rotation.py            FixedRotation (Hadamard / QR / identity)
 │   ├── quantizer.py           GroupScalarQuantizer + vectorised pack/unpack
 │   ├── residual.py            encode_topk_residual / decode_topk_residual
-│   └── pipeline.py            TurboQuantPipeline — single encode/decode path
+│   └── pipeline.py            TurboQuantX1Pipeline — single encode/decode path
 ├── runtime/
 │   ├── layout.py              ensure_layout [B, H, T, D]
-│   ├── kv_interface.py        KVCompressor + TurboQuantKeysView
+│   ├── kv_interface.py        KVCompressor + TurboQuantX1KeysView
 │   ├── attention.py           turboquant_streaming_attention (shared adapter)
 │   └── state.py               STATE_SCHEMA_VERSION + validate_state()
 ├── eval/
@@ -336,7 +336,7 @@ turboquant/
 
 mlx_lm/                        patched mlx-lm
 ├── models/
-│   ├── cache.py               TurboQuantKCache adapter + KVCache helpers
+│   ├── cache.py               TurboQuantX1KCache adapter + KVCache helpers
 │   ├── gemma.py               wired → turboquant_streaming_attention
 │   └── llama.py               wired → turboquant_streaming_attention
 ├── cache_upgrade.py           upgrade_cache_list() — canonical upgrade API
@@ -367,13 +367,13 @@ docs/
 | Component | Status |
 |---|:---:|
 | `KVCompressor` | ✅ tests 38 / 38 |
-| `TurboQuantPipeline` | ✅ single path, no branches |
+| `TurboQuantX1Pipeline` | ✅ single path, no branches |
 | `FixedRotation` (Hadamard / QR / identity) | ✅ deterministic, save / load |
 | `GroupScalarQuantizer` + offline calibration | ✅ dynamic + calibrated |
 | Top-k sparse residual | ✅ per-group, configurable k |
 | Pure-MLX bit-packing | ✅ vectorised, no numpy sync |
 | Versioned state schema (`schema_version: 2`) | ✅ `validate_state()` enforced |
-| `TurboQuantKCache` adapter (legacy API) | ✅ tests 20 / 20 |
+| `TurboQuantX1KCache` adapter (legacy API) | ✅ tests 20 / 20 |
 | Shared streaming attention adapter | ✅ `turboquant.runtime.attention` |
 | Gemma streaming attention | ✅ wired |
 | Llama streaming attention | ✅ wired |
