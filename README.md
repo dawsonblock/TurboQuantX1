@@ -100,22 +100,28 @@ python -m pip install -e '.[apple]'
 
 ## Quick start
 
-### Core interface
+### Core interface (mlx-lm generate)
+
+The simplest path — pass TurboQuant kwargs directly to `generate()`:
 
 ```python
-from turboquant import KVCompressor, TurboQuantX1Config
+from mlx_lm import load, generate
 
-# Defaults: 3-bit K, 4-bit V, Hadamard-family rotation, k=2 sparse residual
-config = TurboQuantX1Config()
-cache  = KVCompressor(config, layer_id=0)
+model, tokenizer = load("mlx-community/Llama-3.2-1B-Instruct-4bit")
 
-# Each decode step:
-view, v_cur = cache.update_and_fetch(keys, values)  # keys/values: [B, H, T, D]
-q_rot       = cache.rotate_queries(queries)          # rotate Q into K's frame
-
-for start, end, k_blk, v_blk in cache.iter_rotated_kv_blocks(view):
-    # standard online-softmax attention over (q_rot, k_blk, v_blk)
-    ...
+response = generate(
+    model,
+    tokenizer,
+    prompt="Explain KV-cache compression.",
+    max_tokens=256,
+    turboquant_k_start=0,
+    turboquant_k_bits=3,
+    turboquant_group_size=64,
+    turboquant_rotation="hadamard",
+    turboquant_residual_topk=2,
+    turboquant_v_bits=4,
+    turboquant_v_enabled=True,
+)
 ```
 
 ### Wiring into mlx-lm generation
@@ -123,14 +129,14 @@ for start, end, k_blk, v_blk in cache.iter_rotated_kv_blocks(view):
 ```python
 from mlx_lm.models.cache import make_prompt_cache
 from integrations.mlx.upgrade import upgrade_cache_list
-from turboquant.config import TurboQuantX1Config
+from turboquant.config import TurboQuantConfig
 
 cache = make_prompt_cache(model)
 # ... run prefill ...
 
-cfg    = TurboQuantX1Config(k_bits=3, k_group_size=64, rotation="hadamard")
-events = upgrade_cache_list(cache, k_start=64, config=cfg)
-# decode loop continues with TurboQuantX1 cache
+cfg    = TurboQuantConfig(k_bits=3, k_group_size=64, rotation="hadamard")
+events = upgrade_cache_list(cache, k_start=0, config=cfg)
+# decode loop continues with TurboQuant cache
 ```
 
 ### Optional: offline calibration
@@ -151,8 +157,9 @@ calibrate(
 ### Tune the config
 
 ```python
-config = TurboQuantX1Config(
+config = TurboQuantConfig(
     k_bits=4,                          # increase for higher K quality
+    residual_mode="topk",              # use top-k sparse residual
     residual_topk=4,                   # more residual components → lower error
     rotation="random_orthogonal",      # alternative to Hadamard
     rotation_seed=1337,
@@ -160,16 +167,16 @@ config = TurboQuantX1Config(
 )
 ```
 
-### Legacy mlx-lm cache
+### Legacy mlx-lm cache adapter
 
-`turboquant_return_mode` and `turboquant_resid_scale_bits` remain only for backward-compatible state and config loading. The production upgrade path ignores `return_mode` and always returns a `TurboQuantX1KeysView`. Real residual behavior is controlled by `residual_topk`.
+`turboquant_resid_scale_bits` remains only for backward-compatible state loading. The production upgrade path always returns a `TurboQuantKeysView`; real residual behavior is controlled by `residual_mode` + `residual_topk`.
 
 ```python
-from mlx_lm.models.cache import TurboQuantX1Config, TurboQuantX1KCache
+from integrations.mlx.cache_adapter import TurboQuantKCache, TurboQuantConfig as AdapterConfig
 
-cache = TurboQuantX1KCache(
-    TurboQuantX1Config(main_bits=3, group_size=64, rotation="hadamard",
-                     return_mode="view", v_bits=4, v_enabled=True)
+cache = TurboQuantKCache(
+    AdapterConfig(k_bits=3, k_group_size=64, rotation_mode="hadamard",
+                  v_bits=4, v_enabled=True)
 )
 ```
 
@@ -319,10 +326,10 @@ turboquant/
 │   ├── rotation.py            FixedRotation (Hadamard / QR / identity)
 │   ├── quantizer.py           GroupScalarQuantizer + vectorised pack/unpack
 │   ├── residual.py            encode_topk_residual / decode_topk_residual
-│   └── pipeline.py            TurboQuantX1Pipeline — single encode/decode path
+│   └── pipeline.py            encode_k_block / decode_k_block — single encode/decode path
 ├── runtime/
 │   ├── layout.py              ensure_layout [B, H, T, D]
-│   ├── kv_interface.py        KVCompressor + TurboQuantX1KeysView
+│   ├── kv_interface.py        TurboQuantKVCache + TurboQuantKeysView
 │   ├── attention.py           turboquant_streaming_attention (shared adapter)
 │   └── state.py               STATE_SCHEMA_VERSION + validate_state()
 ├── eval/
@@ -336,11 +343,13 @@ turboquant/
 
 mlx_lm/                        patched mlx-lm
 ├── models/
-│   ├── cache.py               TurboQuantX1KCache adapter + KVCache helpers
+│   ├── base.py                scaled_dot_product_attention — TurboQuantKeysView dispatch
 │   ├── gemma.py               wired → turboquant_streaming_attention
 │   └── llama.py               wired → turboquant_streaming_attention
-├── cache_upgrade.py           upgrade_cache_list() — canonical upgrade API
-└── generate.py                maybe_turboquant_k_cache (deprecated compatibility shim)
+├── generate.py                maybe_turboquant_k_cache + generate_step
+integrations/mlx/
+├── cache_adapter.py           TurboQuantKCache (mlx_lm adapter), TurboQuantConfig shim
+└── upgrade.py                 upgrade_cache_list() — canonical upgrade API
 
 tests/
 ├── unit_static/               Import + version tests (no MLX needed)
@@ -366,17 +375,19 @@ docs/
 
 | Component | Status |
 |---|:---:|
-| `KVCompressor` | ✅ tests 38 / 38 |
-| `TurboQuantX1Pipeline` | ✅ single path, no branches |
+| `TurboQuantKVCache` | ✅ tests 38 / 38 |
+| `encode_k_block` / `decode_k_block` pipeline | ✅ single path, no branches |
 | `FixedRotation` (Hadamard / QR / identity) | ✅ deterministic, save / load |
 | `GroupScalarQuantizer` + offline calibration | ✅ dynamic + calibrated |
 | Top-k sparse residual | ✅ per-group, configurable k |
 | Pure-MLX bit-packing | ✅ vectorised, no numpy sync |
 | Versioned state schema (`schema_version: 2`) | ✅ `validate_state()` enforced |
-| `TurboQuantX1KCache` adapter (legacy API) | ✅ tests 20 / 20 |
+| `TurboQuantKCache` adapter (mlx_lm integration) | ✅ tests 20 / 20 |
 | Shared streaming attention adapter | ✅ `turboquant.runtime.attention` |
+| Centralized SDPA dispatch in `mlx_lm/models/base.py` | ✅ all model families |
 | Gemma streaming attention | ✅ wired |
 | Llama streaming attention | ✅ wired |
+| Qwen streaming attention | ✅ runtime verified |
 | `upgrade_cache_list` cache upgrade API | ✅ canonical, idempotent |
 | Eval suite (perplexity / KL drift / memory) | ✅ `turboquant.eval` |
 | Quality gates (Δppl ≤ 0.5, mean_kl ≤ 0.1) | ✅ `run_quality_eval.py` |
@@ -398,7 +409,7 @@ docs/
 ## Limitations
 
 - **Quality gated but not yet measured at scale** — `run_quality_eval.py` enforces Δppl ≤ 0.5 and mean_kl ≤ 0.1 gates. Run `make certify-apple-runtime` with model weights to validate.
-- **Gemma- and Llama-family adapter paths exist in this repository. Actual support is established only by successful Apple-Silicon runtime certification for the specific model path being used.** Adding a new architecture is a [one-function change](docs/integration.md#adding-a-new-model-family).
+- **Gemma-, Llama-, and Qwen-family paths are runtime verified** on Apple Silicon via the benchmark suite. Other model families route through the centralized `base.py` SDPA dispatch automatically — no per-model wiring required. Adding a new architecture is a [one-function change](docs/integration.md#adding-a-new-model-family).
 - **Metal execution requires explicit opt-in** — Apple Silicon native shaders are extremely fast (~1ms execution latency per 1024 token stream) but require opt-in by setting `TQ_USE_METAL=1`. Core native bindings have been aggressively optimized via `mx.compile` for default fallback paths yielding double the fallback speed.
 - **Hadamard is O(d²)** — not a fast butterfly transform. For very large head-dims, `rotation="identity"` is faster with marginally worse compression.
 

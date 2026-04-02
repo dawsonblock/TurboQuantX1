@@ -16,6 +16,7 @@ What this repository currently intends to support:
 - `mlx_lm` adapter path used to upgrade dense prompt caches into `KVCompressor`
 - Llama-family integration path
 - Gemma-family integration path
+- Qwen-family integration path (runtime verified via centralized base.py dispatch)
 
 ## Model Support Matrix
 
@@ -23,7 +24,7 @@ What this repository currently intends to support:
 | :--- | :--- | :--- | :--- |
 | Llama | Yes | **Supported** | Explicit memory/latency benchmarks validated local. |
 | Gemma | Yes | **Supported** | Explicit memory/latency benchmarks validated local. |
-| Mistral | No | Unsupported | Provided via upstream sync only. |
+| Qwen | Yes | **Runtime Verified** | Qwen2.5-0.5B-Instruct-4bit benchmarked and generating correctly on Apple Silicon. |
 | Qwen | No | Unsupported | Provided via upstream sync only. |
 | Phi | No | Unsupported | Provided via upstream sync only. |
 | &lt;All Others&gt; | No | Unsupported | Uncertified. Vended for structural scaffolding. |

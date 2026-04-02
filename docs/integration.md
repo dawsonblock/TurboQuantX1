@@ -4,6 +4,28 @@
 
 ---
 
+## 0. Preferred approach — centralized dispatch (no per-model changes)
+
+The simplest integration path requires **no changes to individual model files**.
+`mlx_lm/models/base.py`’s `scaled_dot_product_attention` function now contains
+a type-guard that automatically routes any `TurboQuantKeysView` tensor to
+`turboquant_streaming_attention`:
+
+```python
+# mlx_lm/models/base.py (already applied)
+def scaled_dot_product_attention(queries, keys, values, cache, scale, mask=None, ...):
+    if type(keys).__name__ == "TurboQuantKeysView":
+        from turboquant.runtime.attention import turboquant_streaming_attention
+        return turboquant_streaming_attention(queries, keys, scale=scale, mask=mask)
+    ...
+```
+
+This means **any** model that calls `scaled_dot_product_attention` from `base.py`
+will automatically support TurboQuant without further modification. Verified on
+Qwen2.5-0.5B-Instruct-4bit, Llama, and Gemma on Apple Silicon (commit `6afc966`).
+
+---
+
 ## 1. Concepts
 
 TurboQuant inserts itself into two places:
@@ -112,6 +134,13 @@ Gemma.  See `mlx_lm/models/llama.py` → `Attention.__call__`.
 ---
 
 ## 6. Adding a new model family
+
+**Preferred (zero changes required):** If the model’s attention calls
+`scaled_dot_product_attention` from `mlx_lm.models.base`, TurboQuant already
+works out of the box via the centralized dispatch in `base.py`.
+
+**Manual wiring (fallback):** For models with custom attention implementations
+that bypass `base.py`:
 
 1. Add `from turboquant.runtime.attention import turboquant_streaming_attention` and `from turboquant.runtime.kv_interface import TurboQuantKeysView`
 2. In `Attention.__call__`, replace the dense `scaled_dot_product_attention`
