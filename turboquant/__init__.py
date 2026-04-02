@@ -1,19 +1,19 @@
 """
-TurboQuant — research-stage KV-cache compression for selected MLX/Apple-Silicon LLM paths.
+TurboQuant — research-stage KV-cache compression for selected MLX/Apple-Silicon RLM paths.
 
 This package exposes the supported public surface for the current TurboQuant prototype.
 Do not treat the package-level API as production-certified unless the corresponding
 runtime-certification artifacts have been generated on Apple Silicon.
 
 Public API
-----------
++--------
 TurboQuantConfig          — runtime-immutable configuration
-KVCompressor              — drop-in KV cache with compress/decompress
 TurboQuantPipeline        — low-level encode/decode pipeline
+KVCompressor              — compatibility alias to TurboQuantKVCache
 calibrate                 — calibration pass over representative data
 """
 
-from turboquant._deps import (  # noqa: F401
+from turboquant._deps import (
     check_mlx_version,
     has_mlx,
     is_apple_silicon,
@@ -24,26 +24,21 @@ from turboquant.config import TurboQuantConfig
 # Validate MLX version bounds at import time (no-op if MLX is absent)
 check_mlx_version()
 
-
 # Lazy imports for MLX-dependent runtime symbols
 def __getattr__(name: str):
     if name == "calibrate":
         require_mlx("calibrate()")
         from turboquant.calibration.fit_quantizer import calibrate
-
         return calibrate
-    elif name == "TurboQuantPipeline":
+    elif name == "TurboquantPipeline":
         require_mlx("TurboQuantPipeline")
         from turboquant.core.pipeline import TurboQuantPipeline
-
         return TurboQuantPipeline
     elif name == "KVCompressor":
         require_mlx("KVCompressor")
         from turboquant.runtime.kv_interface import KVCompressor
-
         return KVCompressor
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
-
 
 __all__ = [
     "TurboQuantConfig",

@@ -27,11 +27,9 @@ class KVCacheState:
 
 class TurboQuantKVCache:
     """
-    Transitional generic cache.
+    Encoded K-block store with state roundtrip and MLX adapter support.
 
     Stores one EncodedKeyBlock per appended chunk.
-    This removes any assumption that residuals are represented
-    as sparse vals/idx tensors.
     """
 
     def __init__(

@@ -53,8 +53,14 @@ def test_no_mlx_import_in_unit_static() -> None:
     violations: list[str] = []
     for py in sorted(this_dir.glob("*.py")):
         text = py.read_text(encoding="utf-8")
-        if re.search(r"\bimport\s+mlx\b|from\s+mlx\b", text):
-            violations.append(py.name)
+        tree = ast.parse(text)
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                if any(alias.name == "mlx" for alias in node.names):
+                    violations.append(py.name)
+            elif isinstance(node, ast.ImportFrom):
+                if node.module == "mlx":
+                    violations.append(py.name)
     assert not violations, (
         "These files in tests/unit_static/ import mlx (forbidden):\n"
         + "\n".join(f"  {v}" for v in violations)

@@ -45,10 +45,6 @@ The following files diverge from upstream `mlx-lm`:
 - After `upgrade_cache_list()`, logs one-time INFO confirming TQ cache activation
 - Added structured logging (`turboquant.generate`)
 
-### `mlx_lm/cache_upgrade.py`
-
-- `upgrade_cache_list()` — canonical API for upgrading a dense prompt cache to TurboQuant
-
 ### Files Unchanged from Upstream
 
 All other files in `mlx_lm/` (e.g., `convert.py`, `lora.py`, `server.py`, `utils.py`,
@@ -82,7 +78,7 @@ upstream `v0.29.1`.
    # Copy all files EXCEPT the patched ones
    rsync -av --exclude='models/cache.py' --exclude='models/llama.py' \
              --exclude='models/gemma.py' --exclude='generate.py' \
-             --exclude='cache_upgrade.py' \
+             
              /tmp/mlx-lm-upstream/mlx_lm/ mlx_lm/
    ```
 
