@@ -5,6 +5,7 @@ from dataclasses import dataclass
 import mlx.core as mx
 
 from turboquant.config import TurboQuantConfig
+
 from .residual_codec import ResidualPayload, build_residual_codec
 
 

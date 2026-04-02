@@ -33,17 +33,17 @@ def score_block(
             f"q_rot dim {int(q_rot.shape[-1])} != main_rot dim {int(main_rot.shape[-1])}"
         )
 
-    
+
     if q_rot.shape[-3] != main_rot.shape[-3]:
         n_rep = q_rot.shape[-3] // main_rot.shape[-3]
         main_rot = mx.repeat(main_rot, n_rep, axis=-3)
 
-    
+
     if q_rot.shape[-3] != main_rot.shape[-3]:
         n_rep = q_rot.shape[-3] // main_rot.shape[-3]
         main_rot = mx.repeat(main_rot, n_rep, axis=-3)
 
-    
+
     if q_rot.shape[-3] != main_rot.shape[-3]:
         n_rep = q_rot.shape[-3] // main_rot.shape[-3]
         main_rot = mx.repeat(main_rot, n_rep, axis=-3)
@@ -61,10 +61,10 @@ def score_block(
     if block.residual.mode == "topk":
         resid_hat = codec.decode(block.residual, config=config)
         resid_rot = resid_hat[..., : block.d_rot]
-        
+
         if q_rot.shape[-3] != resid_rot.shape[-3]:
             resid_rot = mx.repeat(resid_rot, q_rot.shape[-3] // resid_rot.shape[-3], axis=-3)
-            
+
         resid_scores = q_rot @ mx.swapaxes(resid_rot, -1, -2)
         return main_scores + resid_scores
 
@@ -111,7 +111,6 @@ def streaming_scores(
 # Legacy compatibility shim for MLX integrations (llama, gemma, etc.)
 def turboquant_streaming_attention(queries, keys_view, scale=1.0, mask=None):
     cache = keys_view.cache
-    from turboquant.config import TurboQuantConfig
     import mlx.core as mx
 
     # The actual config and dequantization lives in cache._impl
@@ -125,7 +124,7 @@ def turboquant_streaming_attention(queries, keys_view, scale=1.0, mask=None):
         config=config,
         dequantize_main=dequantize_main,
     )
-    
+
     # We concatenate scores then softmax
     scores = mx.concatenate(scores, axis=-1)
     if mask == "causal":
@@ -149,12 +148,12 @@ def turboquant_streaming_attention(queries, keys_view, scale=1.0, mask=None):
     if mask is not None:
         scores = scores + mask
 
-    
+
     # Values might be in the dense cache wrapper if not compressed yet.
     # The cache adapter stores `v_cache` natively in MLX arrays.
     vals = mx.concatenate(cache.v_cache, axis=-2)
-    
-    
+
+
     attn = mx.softmax(scores, axis=-1)
     if queries.shape[-3] != vals.shape[-3]:
         n_rep = queries.shape[-3] // vals.shape[-3]

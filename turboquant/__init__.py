@@ -45,6 +45,10 @@ __all__ = [
     "TurboQuantPipeline",
     "KVCompressor",
     "calibrate",
+    "check_mlx_version",
+    "has_mlx",
+    "is_apple_silicon",
+    "require_mlx",
 ]
 
 __version__ = "0.2.2"

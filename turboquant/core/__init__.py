@@ -1,4 +1,4 @@
-from turboquant.core.pipeline import encode_k_block, decode_k_block
+from turboquant.core.pipeline import decode_k_block, encode_k_block
 from turboquant.core.quantizer import GroupScalarQuantizer
 from turboquant.core.rotation import FixedRotation
 

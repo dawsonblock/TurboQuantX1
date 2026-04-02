@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+
 @dataclass(slots=True)
 class TurboQuantConfig:
     k_bits: int = 3
@@ -96,7 +97,7 @@ class TurboQuantConfig:
 
         cfg.validate()
         return cfg
-    
+
     def to_state_dict(self) -> dict:
         return {
             "k_bits": self.k_bits,

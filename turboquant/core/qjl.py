@@ -16,7 +16,7 @@ class QJLMeta:
         return asdict(self)
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "QJLMeta":
+    def from_dict(cls, data: dict[str, Any]) -> QJLMeta:
         return cls(
             input_dim=int(data["input_dim"]),
             proj_dim=int(data["proj_dim"]),
@@ -145,11 +145,11 @@ class QJLProjector:
         q_proj = q @ proj                      # [..., q_len, proj_dim]
         signed = unpack_sign_bits(bits)        # [..., k_len, proj_dim]
 
-        
+
         if q_proj.shape[-3] != signed.shape[-3]:
             n_rep = q_proj.shape[-3] // signed.shape[-3]
             signed = mx.repeat(signed, n_rep, axis=-3)
-        
+
         if q_proj.shape[-3] != signed.shape[-3]:
             n_rep = q_proj.shape[-3] // signed.shape[-3]
             signed = mx.repeat(signed, n_rep, axis=-3)
@@ -159,16 +159,16 @@ class QJLProjector:
         q_norm = mx.linalg.norm(q, axis=-1)             # [..., q_len]
         q_norm = mx.maximum(q_norm, mx.array(1e-8, dtype=q_norm.dtype))
 
-        
+
         if q_norm.shape[-2] != norm_scale.shape[-2]:
             n_rep = q_norm.shape[-2] // norm_scale.shape[-2]
             norm_scale = mx.repeat(norm_scale, n_rep, axis=-2)
-        
-        
+
+
         if q_norm.shape[-2] != norm_scale.shape[-2]:
             n_rep = q_norm.shape[-2] // norm_scale.shape[-2]
             norm_scale = mx.repeat(norm_scale, n_rep, axis=-2)
-        
+
         return scores * (norm_scale[..., None, :] / q_norm[..., :, None])
 
 

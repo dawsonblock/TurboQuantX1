@@ -1,8 +1,10 @@
 import os
+
 import mlx.core as mx
 
 from turboquant.core.pipeline import EncodedKeyBlock, decode_k_block
 from turboquant.experimental.kernels.metal.runtime import decode_k_metal
+
 
 def decode_k_block_metal(block: EncodedKeyBlock, config, d_head: int) -> mx.array:
     """
@@ -14,7 +16,7 @@ def decode_k_block_metal(block: EncodedKeyBlock, config, d_head: int) -> mx.arra
         if config.residual_mode == "topk" and hasattr(block.residual, 'data') and block.residual.data is not None:
             rv, ri = block.residual.data
             return decode_k_metal(block.packed_main, block.scales, rv, ri, config, d_head)
-        
+
         if config.residual_mode == "none":
             return decode_k_metal(block.packed_main, block.scales, None, None, config, d_head)
 

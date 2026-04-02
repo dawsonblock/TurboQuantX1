@@ -7,9 +7,8 @@ import mlx.core as mx
 
 from turboquant.config import TurboQuantConfig
 
-from .residual import encode_topk_residual, decode_topk_residual
 from .qjl import QJLProjector
-
+from .residual import decode_topk_residual, encode_topk_residual
 
 ResidualMode = Literal["none", "topk", "qjl"]
 

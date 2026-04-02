@@ -1,9 +1,9 @@
-import warnings
 from dataclasses import dataclass
-from typing import Optional, Any
+from typing import Optional
+
 import mlx.core as mx
 
-from mlx_lm.models.cache import _BaseCache, create_attention_mask
+from mlx_lm.models.cache import _BaseCache
 from turboquant.config import TurboQuantConfig as _ProdTurboQuantConfig
 from turboquant.runtime.kv_interface import TurboQuantKVCache
 
@@ -77,10 +77,10 @@ class TurboQuantKCache(_BaseCache):
         self._offset = v
 
     def update_and_fetch(self, keys, values):
-        block = self._impl.append_keys(keys)
+        self._impl.append_keys(keys)
         self.v_cache.append(values)
         self._offset += keys.shape[2]
-        
+
         from turboquant.runtime.kv_interface import TurboQuantKeysView
         return TurboQuantKeysView(self, self._offset - keys.shape[-2], self._offset), values
 

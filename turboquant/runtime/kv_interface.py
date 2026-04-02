@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 import mlx.core as mx
@@ -114,7 +114,7 @@ class TurboQuantKVCache:
         *,
         quantize_main,
         dequantize_main,
-    ) -> "TurboQuantKVCache":
+    ) -> TurboQuantKVCache:
         if isinstance(state, dict):
             raw = state
         else:
