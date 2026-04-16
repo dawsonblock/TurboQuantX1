@@ -1,0 +1,561 @@
+# Instincts generated from https://github.com/dawsonblock/TurboQuantX1
+# Generated: 2026-04-02T19:54:03.899Z
+# Version: 2.0
+# NOTE: This file supplements (does not replace) any existing curated instincts.
+# High-confidence manually curated instincts should be preserved alongside these.
+
+---
+id: TurboQuantX1-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/dawsonblock/TurboQuantX1
+---
+
+# TurboQuantX1 Commit Length
+
+## Action
+
+Write moderate-length commit messages (~71 characters)
+
+## Evidence
+
+- Average commit message length: 71 chars
+- Based on 14 commits
+
+---
+id: TurboQuantX1-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/dawsonblock/TurboQuantX1
+---
+
+# TurboQuantX1 Naming Files
+
+## Action
+
+Use snake_case naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: snake_case
+
+---
+id: TurboQuantX1-import-relative
+trigger: "when importing modules"
+confidence: 0.75
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/dawsonblock/TurboQuantX1
+---
+
+# TurboQuantX1 Import Relative
+
+## Action
+
+Use relative imports for project files
+
+## Evidence
+
+- Import analysis shows relative import pattern
+- Example: import { x } from '../lib/x'
+
+---
+id: TurboQuantX1-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/dawsonblock/TurboQuantX1
+---
+
+# TurboQuantX1 Export Style
+
+## Action
+
+Prefer named exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: named
+
+---
+id: TurboQuantX1-test-separate
+trigger: "when writing tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/dawsonblock/TurboQuantX1
+---
+
+# TurboQuantX1 Test Separate
+
+## Action
+
+Place tests in the tests/ or __tests__/ directory, mirroring src structure
+
+## Evidence
+
+- Separate test directory pattern detected
+- Tests live in dedicated test folders
+
+---
+id: TurboQuantX1-test-naming
+trigger: "when creating a test file"
+confidence: 0.85
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/dawsonblock/TurboQuantX1
+---
+
+# TurboQuantX1 Test Naming
+
+## Action
+
+Name test files using the pattern: *.test.ts
+
+## Evidence
+
+- File pattern: *.test.ts
+- Consistent across test files
+
+---
+id: TurboQuantX1-test-types
+trigger: "when planning tests for a feature"
+confidence: 0.7
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/dawsonblock/TurboQuantX1
+---
+
+# TurboQuantX1 Test Types
+
+## Action
+
+Write unit, integration tests to match project standards
+
+## Evidence
+
+- Test types detected: unit, integration
+- Coverage config: no
+
+---
+id: TurboQuantX1-workflow-refactoring
+trigger: "when refactoring code"
+confidence: 0.8
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/dawsonblock/TurboQuantX1
+---
+
+# TurboQuantX1 Workflow Refactoring
+
+## Action
+
+Follow the refactoring workflow:
+1. Ensure tests pass before refactor
+2. Refactor code structure
+3. Verify tests still pass
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~6x per month
+- Files: src/**/*
+
+---
+id: TurboQuantX1-workflow-config-schema-update
+trigger: "when doing config schema update"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/dawsonblock/TurboQuantX1
+---
+
+# TurboQuantX1 Workflow Config Schema Update
+
+## Action
+
+Follow the config-schema-update workflow:
+1. Modify turboquant/config.py to update config schema or fields
+2. Update integration adapters (e.g., integrations/mlx/cache_adapter.py, integrations/mlx/upgrade.py) to use new config fields
+3. Update or fix tests and benchmarks that rely on config (e.g., tests/unit/test_kv_interface.py, benchmarks/exploratory/bench_dense_vs_turboquant.py)
+4. Update documentation or comments if necessary
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: turboquant/config.py, integrations/mlx/cache_adapter.py, integrations/mlx/upgrade.py
+
+---
+id: TurboQuantX1-workflow-benchmark-script-update
+trigger: "when doing benchmark script update"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/dawsonblock/TurboQuantX1
+---
+
+# TurboQuantX1 Workflow Benchmark Script Update
+
+## Action
+
+Follow the benchmark-script-update workflow:
+1. Edit or add scripts in benchmarks/exploratory/ or scripts/ (e.g., bench_decode_step.py, run_benchmarks.sh)
+2. Update related shell scripts or pipeline scripts
+3. Optionally update related core modules if benchmarked functionality changes
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: benchmarks/exploratory/bench_decode_step.py, benchmarks/exploratory/bench_k_encode.py, benchmarks/exploratory/bench_memory.py
+
+---
+id: TurboQuantX1-workflow-test-suite-expansion-or-fix
+trigger: "when doing test suite expansion or fix"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/dawsonblock/TurboQuantX1
+---
+
+# TurboQuantX1 Workflow Test Suite Expansion Or Fix
+
+## Action
+
+Follow the test-suite-expansion-or-fix workflow:
+1. Add or update test files in tests/integration_mlx/ or tests/unit/
+2. Ensure tests cover new or changed functionality
+3. Run tests to verify passing status
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: tests/integration_mlx/test_cache_upgrade_roundtrip.py, tests/integration_mlx/test_gemma_runtime_smoke.py, tests/integration_mlx/test_llama_runtime_smoke.py
+
+---
+id: TurboQuantX1-workflow-core-module-refactor
+trigger: "when doing core module refactor"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/dawsonblock/TurboQuantX1
+---
+
+# TurboQuantX1 Workflow Core Module Refactor
+
+## Action
+
+Follow the core-module-refactor workflow:
+1. Refactor or rename classes/functions in turboquant/core/ or turboquant/runtime/
+2. Update all references in benchmarks, integration adapters, and __init__.py files
+3. Update related tests and documentation for consistency
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: turboquant/core/pipeline.py, turboquant/core/qjl.py, turboquant/core/residual_codec.py
+
+---
+id: turboquantx1-instinct-file-naming
+trigger: "When creating or renaming files"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: dawsonblock/TurboQuantX1
+---
+
+# Turboquantx1 Instinct File Naming
+
+## Action
+
+Use snake_case for file names
+
+## Evidence
+
+- Pattern in namingConventions.files
+- All example files use snake_case
+
+---
+id: turboquantx1-instinct-function-naming
+trigger: "When defining new functions"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: dawsonblock/TurboQuantX1
+---
+
+# Turboquantx1 Instinct Function Naming
+
+## Action
+
+Use camelCase for function names
+
+## Evidence
+
+- Pattern in namingConventions.functions
+
+---
+id: turboquantx1-instinct-class-naming
+trigger: "When defining new classes"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: dawsonblock/TurboQuantX1
+---
+
+# Turboquantx1 Instinct Class Naming
+
+## Action
+
+Use PascalCase for class names
+
+## Evidence
+
+- Pattern in namingConventions.classes
+
+---
+id: turboquantx1-instinct-constant-naming
+trigger: "When defining constants"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: dawsonblock/TurboQuantX1
+---
+
+# Turboquantx1 Instinct Constant Naming
+
+## Action
+
+Use SCREAMING_SNAKE_CASE for constants
+
+## Evidence
+
+- Pattern in namingConventions.constants
+
+---
+id: turboquantx1-instinct-import-style
+trigger: "When importing modules within the package"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: dawsonblock/TurboQuantX1
+---
+
+# Turboquantx1 Instinct Import Style
+
+## Action
+
+Use relative imports
+
+## Evidence
+
+- Pattern in importStyle: relative
+
+---
+id: turboquantx1-instinct-export-style
+trigger: "When exporting symbols from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: dawsonblock/TurboQuantX1
+---
+
+# Turboquantx1 Instinct Export Style
+
+## Action
+
+Use named exports
+
+## Evidence
+
+- Pattern in exportStyle: named
+
+---
+id: turboquantx1-instinct-test-file-location
+trigger: "When adding or updating tests"
+confidence: 0.85
+domain: testing
+source: repo-analysis
+source_repo: dawsonblock/TurboQuantX1
+---
+
+# Turboquantx1 Instinct Test File Location
+
+## Action
+
+Place test files in the tests/ directory, using separate folders for unit and integration tests
+
+## Evidence
+
+- Pattern in architecture.folderStructure.testLocation
+- Examples in tests/unit/ and tests/integration_mlx/
+
+---
+id: turboquantx1-instinct-test-file-naming
+trigger: "When naming test files"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: dawsonblock/TurboQuantX1
+---
+
+# Turboquantx1 Instinct Test File Naming
+
+## Action
+
+Use descriptive names reflecting the tested module or feature
+
+## Evidence
+
+- Examples: test_kv_interface.py, test_cache_upgrade_roundtrip.py
+
+---
+id: turboquantx1-instinct-test-update-after-feature-change
+trigger: "When adding new features or refactoring core/config code"
+confidence: 0.85
+domain: testing
+source: repo-analysis
+source_repo: dawsonblock/TurboQuantX1
+---
+
+# Turboquantx1 Instinct Test Update After Feature Change
+
+## Action
+
+Add or update tests to cover the new or changed functionality
+
+## Evidence
+
+- Workflow: test-suite-expansion-or-fix
+- Commit sequences updating tests after code changes
+
+---
+id: turboquantx1-instinct-git-commit-prefix
+trigger: "When writing a commit message"
+confidence: 0.9
+domain: git
+source: repo-analysis
+source_repo: dawsonblock/TurboQuantX1
+---
+
+# Turboquantx1 Instinct Git Commit Prefix
+
+## Action
+
+Prefix the commit message with fix:, chore:, or refactor: as appropriate
+
+## Evidence
+
+- Pattern in commits.prefixes
+- Examples: fix: ..., chore: ..., refactor: ...
+
+---
+id: turboquantx1-instinct-git-commit-length
+trigger: "When writing a commit message"
+confidence: 0.7
+domain: git
+source: repo-analysis
+source_repo: dawsonblock/TurboQuantX1
+---
+
+# Turboquantx1 Instinct Git Commit Length
+
+## Action
+
+Keep the commit message concise (average ~70 characters), but descriptive
+
+## Evidence
+
+- Pattern in commits.averageLength
+- Examples of concise commit messages
+
+---
+id: turboquantx1-instinct-config-schema-update
+trigger: "When changing or refactoring the configuration structure or naming conventions"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: dawsonblock/TurboQuantX1
+---
+
+# Turboquantx1 Instinct Config Schema Update
+
+## Action
+
+Update turboquant/config.py, integration adapters, related tests/benchmarks, and documentation as needed
+
+## Evidence
+
+- Workflow: config-schema-update
+- Commit sequences updating config, adapters, and tests
+
+---
+id: turboquantx1-instinct-benchmark-script-update
+trigger: "When improving, refactoring, or extending benchmarking capabilities"
+confidence: 0.85
+domain: workflow
+source: repo-analysis
+source_repo: dawsonblock/TurboQuantX1
+---
+
+# Turboquantx1 Instinct Benchmark Script Update
+
+## Action
+
+Edit/add scripts in benchmarks/exploratory/ or scripts/, update related shell/pipeline scripts, and optionally update core modules
+
+## Evidence
+
+- Workflow: benchmark-script-update
+- Commit sequences editing benchmark scripts
+
+---
+id: turboquantx1-instinct-test-suite-expansion-or-fix
+trigger: "When adding features, changing config, or fixing bugs that affect functionality"
+confidence: 0.85
+domain: workflow
+source: repo-analysis
+source_repo: dawsonblock/TurboQuantX1
+---
+
+# Turboquantx1 Instinct Test Suite Expansion Or Fix
+
+## Action
+
+Add or update test files in tests/integration_mlx/ or tests/unit/, ensure coverage, and verify tests pass
+
+## Evidence
+
+- Workflow: test-suite-expansion-or-fix
+- Commit sequences adding/updating tests after changes
+
+---
+id: turboquantx1-instinct-core-module-refactor
+trigger: "When improving code quality, renaming classes, or refactoring core logic"
+confidence: 0.85
+domain: workflow
+source: repo-analysis
+source_repo: dawsonblock/TurboQuantX1
+---
+
+# Turboquantx1 Instinct Core Module Refactor
+
+## Action
+
+Refactor/rename in turboquant/core/ or turboquant/runtime/, update all references, and update related tests/docs
+
+## Evidence
+
+- Workflow: core-module-refactor
+- Commit sequences refactoring core modules and updating references
+
